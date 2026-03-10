@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>ResearchHub AI</title>
+
+    <style>
+        body {
+            font-family: Arial;
+            background: #eef2f7;
+            text-align: center;
+        }
+
+        .container {
+            width: 700px;
+            margin: auto;
+            background: white;
+            padding: 25px;
+            margin-top: 30px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px gray;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        .section {
+            margin-top: 25px;
+        }
+
+        input {
+            width: 85%;
+            padding: 10px;
+            margin: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+
+        .result {
+            background: #f1f1f1;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 5px;
+        }
+
+        .chatbox {
+            background: #f9f9f9;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 5px;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>ResearchHub AI</h1>
+
+        <p>AI Powered Research Paper Assistant</p>
+
+        <!-- Register -->
+
+        <div class="section">
+
+            <h3>Register</h3>
+
+            <input id="reg_user" placeholder="Username">
+            <input id="reg_pass" placeholder="Password">
+
+            <br>
+
+            <button onclick="register()">Register</button>
+
+        </div>
+
+        <!-- Login -->
+
+        <div class="section">
+
+            <h3>Login</h3>
+
+            <input id="login_user" placeholder="Username">
+            <input id="login_pass" placeholder="Password">
+
+            <br>
+
+            <button onclick="login()">Login</button>
+
+        </div>
+
+        <!-- Search Papers -->
+
+        <div class="section">
+
+            <h3>Search Research Papers</h3>
+
+            <input id="search_query" placeholder="Enter research topic">
+
+            <br>
+
+            <button onclick="search()">Search</button>
+
+            <div id="papers"></div>
+
+        </div>
+
+        <!-- AI Chat -->
+
+        <div class="section">
+
+            <h3>Ask AI Research Assistant</h3>
+
+            <input id="chat_input" placeholder="Ask a research question">
+
+            <br>
+
+            <button onclick="chat()">Ask AI</button>
+
+            <div id="chat_response" class="chatbox"></div>
+
+        </div>
+
+    </div>
+
+    <script>
+
+        async function register() {
+
+            let username = document.getElementById("reg_user").value
+            let password = document.getElementById("reg_pass").value
+
+            let res = await fetch("http://127.0.0.1:8000/register?username=" + username + "&password=" + password, {
+                method: "POST"
+            })
+
+            let data = await res.json()
+
+            alert(data.message)
+
+        }
+
+        async function login() {
+
+            let username = document.getElementById("login_user").value
+            let password = document.getElementById("login_pass").value
+
+            let res = await fetch("http://127.0.0.1:8000/login?username=" + username + "&password=" + password, {
+                method: "POST"
+            })
+
+            let data = await res.json()
+
+            alert(data.message)
+
+        }
+
+        async function search() {
+
+            let query = document.getElementById("search_query").value
+
+            let res = await fetch("http://127.0.0.1:8000/search?query=" + query)
+
+            let data = await res.json()
+
+            let html = ""
+
+            data.papers.forEach(p => {
+
+                html += `
+<div class="result">
+<h4>${p.title}</h4>
+<p>${p.abstract}</p>
+</div>
+`
+
+            })
+
+            document.getElementById("papers").innerHTML = html
+
+        }
+
+        async function chat() {
+
+            let message = document.getElementById("chat_input").value
+
+            let res = await fetch("http://127.0.0.1:8000/chat", {
+
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({ text: message })
+
+            })
+
+            let data = await res.json()
+
+            document.getElementById("chat_response").innerHTML = data.response
+
+        }
+
+    </script>
+
+</body>
+
+</html>
